@@ -5,14 +5,12 @@
  * https://github.com/sebmarkbage/ecmascript-rest-spread/blob/master/Spread.md
  */
 
- import { assert } from 'chai';
-
  // To do: make all tests pass, leave the assert lines unchanged!
  describe('Spread properties for object literals', () => {
 
    it('shallows a clone (excluding prototype)', () => {
      let a = {id: 1, name: 'Bert'};
-     let aClone = { a }; // let aClone = Object.assign({}, a);
+     let aClone = { ...a }; // let aClone = Object.assign({}, a);
      assert.notStrictEqual(aClone, a);
      assert.deepEqual(aClone, a);
      assert.strictEqual(a.id, aClone.id);
@@ -22,7 +20,7 @@
    it('merges two objects', () => {
      let a = {id: 1, name: 'Bert'};
      let b = {courses: ['ES6', 'Reactjs', 'Redux'], college: 'Hogent'};
-     let ab = { ...a }; // let ab = Object.assign({}, a, b);
+     let ab = { ...a, ...b }; // let ab = Object.assign({}, a, b);
      assert.typeOf(ab, 'object');
      assert.strictEqual(ab.id, 1);
      assert.strictEqual(ab.name, 'Bert');
@@ -33,15 +31,16 @@
 
    it('overrides properties', () => {
      let a = {id: 1, name: 'Bert'};
-     let aWithOverrides = { name: 'Joeri', ...a }; // let aWithOverrides = Object.assign({}, a, { name: 'Joeri'});
+     let aWithOverrides = { ...a, name: 'Joeri' }; // let aWithOverrides = Object.assign({}, a, { name: 'Joeri'});
      assert.strictEqual(aWithOverrides.id, 1);
      assert.strictEqual(aWithOverrides.name, 'Joeri');
      // Equivalent to
-     aWithOverrides = { a, ...{ name: 'Joeri' } };
+     aWithOverrides = { ...a, ...{ name: 'Joeri' } };
      assert.strictEqual(aWithOverrides.id, 1);
      assert.strictEqual(aWithOverrides.name, 'Joeri');
      // Equivalent to
-     let name = 'Joeri'; aWithOverrides = { ...a, name };
+     let name = 'Joeri';
+     aWithOverrides = { ...a, name: name };
      assert.strictEqual(aWithOverrides.id, 1);
      assert.strictEqual(aWithOverrides.name, 'Joeri');
 
@@ -49,7 +48,7 @@
 
    it('has a shorthand for default properties', () => {
      let a = {x: 2};
-     let aWithDefaults = { ...a, x: 1, y: 2 }; // let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
+     let aWithDefaults = { x: 1, y: 2, ...a }; // let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
      assert.strictEqual(aWithDefaults.x, 2);
      assert.strictEqual(aWithDefaults.y, 2);
 
@@ -72,7 +71,7 @@
        ...previousVersion,
        name: 'Bert', // Override the name property
        address: { ...previousVersion.address, zipCode: '99999' }, // Update nested zip code
-       items: [previousVersion.items, { title: 'New Item' }] // Add an item to the list of items
+       items: [...previousVersion.items, { title: 'New Item' }] // Add an item to the list of items
      };
 
      assert.strictEqual(newVersion.id, 1);
